@@ -15,25 +15,27 @@ const fetchRandomWord = async () => {
       word: [randomWord],
     } = await response.json();
     console.log("Random word:", randomWord);
-    fetchAudio(randomWord);
-    return randomWord;
+    const definition = await fetchDefinition(randomWord);
+    return { randomWord, definition };
   } catch (error) {
     console.error("Error fetching random word:", error);
     throw error;
   }
 };
 
-const fetchAudio = async (word) => {
+const fetchDefinition = async (word) => {
   try {
     const response = await fetch(
-      `${base_url}${word}/audio?limit=50&${wordNikapikey}`
+      "https://api.api-ninjas.com/v1/dictionary?word=" + word,
+      {
+        headers: { "X-Api-Key": apiKey },
+      }
     );
-    console.log("Response:", response);
-    const [{ fileUrl }] = await response.json();
-    console.log("Audio URL:", fileUrl);
-    return fileUrl;
+    const definition = await response.json();
+    console.log("Definition:", definition.definition);
+    return definition.definition;
   } catch (error) {
-    console.error("Error fetching audio:", error);
+    console.error("Error fetching definition:", error);
     throw error;
   }
 };

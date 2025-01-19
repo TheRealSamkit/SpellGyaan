@@ -16,7 +16,7 @@
   <body class="flex">
     <h1 class="title">SpellGyaan</h1>
     <main class="flex">
-      <button type="button" id="init" class="btn hide">Start Game</button>
+      <button type="button" id="init" class="btn">Start Game</button>
       <div class="diffContainer hide">
         <h2>Select Difficulty</h2>
         <div class="flex btnContainer">
@@ -25,10 +25,34 @@
           <button class="btn" data-mode="hard">Hard</button>
         </div>
       </div>
-      <div class="container flex">
-        <div class="card"></div>
+      <div class="container flex hide">
+        <div class="audioCon flex">
+          <p class="audTitle">Word:</p>
+          <button class="btn wd-btn">▶</button>
+          <p class="audTitle">Definition:</p>
+          <button class="btn wd-btn">▶</button>
+        </div>
+        <div class="gameCon flex">
+          <input
+            type="text"
+            id="userInput"
+            class="inp"
+            placeholder="Type the word here"
+          />
+          <button type="button" class="btn sbt-btn" id="submit">Submit</button>
+        </div>
+        <p class="message" id="message">Result: -----------------</p>
       </div>
     </main>
+
+    <a
+      href="https://github.com/TheRealSamkit/SpellGyaan"
+      class="copy"
+      title="View the SpellGyaan source code on GitHub"
+      target="_blank"
+    >
+      Made by &copy;Samkit Jain</a
+    >
     <script src="script.js" type="module"></script>
   </body>
 </html>

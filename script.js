@@ -1,5 +1,8 @@
 import { fetchRandomWord } from "/api.js";
 
+let word = "",
+  definition = "";
+
 const elements = {
   initializer: document.getElementById("init"),
   diffCon: document.querySelector(".diffContainer"),
@@ -24,21 +27,28 @@ function startScreen() {
 function startGame(mode) {
   toggleVisibility(elements.diffCon, "add");
   toggleVisibility(elements.container, "remove");
+  fetchWordandDef();
 }
 
-function speak() {
-  // Create a SpeechSynthesisUtterance
-  const utterance = new SpeechSynthesisUtterance("Potato");
+async function fetchWordandDef() {
+  await fetchRandomWord()
+    .then(({ randomWord, definition }) => {
+      word = randomWord;
+      definition = definition;
+      console.log("Word:", word, "Definition:", definition);
+    })
+    .catch((error) => {
+      console.error("Error fetching word and definition:", error);
+      fetchWordandDef();
+    });
+}
 
-  // Select a voice
+function speak(toSpeak) {
+  const utterance = new SpeechSynthesisUtterance(toSpeak);
   const voices = speechSynthesis.getVoices();
-  utterance.voice = voices[1]; // Choose a specific voice
-
-  // Speak the text
+  utterance.voice = voices[1];
   speechSynthesis.speak(utterance);
 }
-
-speak();
 
 function toggleVisibility(element, toggle) {
   element.classList.toggle("hide");
