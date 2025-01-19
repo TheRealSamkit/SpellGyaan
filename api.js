@@ -1,8 +1,6 @@
 const apiKey = "MsdGU/2fCdNC+r6rIExaHQ==NLsJaoXtMqa2dmXm";
-const wordNikapikey =
-  "api_key=69wp35r1f05w1jj3qrefvfip1a1as4ctvkx6i2njeb93mfs5z";
-const base_url = `https://api.wordnik.com/v4/word.json/`;
 
+// Function to fetch a random word
 const fetchRandomWord = async () => {
   try {
     const response = await fetch(
@@ -11,18 +9,21 @@ const fetchRandomWord = async () => {
         headers: { "X-Api-Key": apiKey },
       }
     );
-    const {
-      word: [randomWord],
-    } = await response.json();
+
+    // Parse the response
+    const { word: randomWord } = await response.json(); // Assuming the response contains { word: "example" }
     console.log("Random word:", randomWord);
+
+    // Fetch the definition for the word
     const definition = await fetchDefinition(randomWord);
     return { randomWord, definition };
   } catch (error) {
     console.error("Error fetching random word:", error);
-    throw error;
+    throw error; // Propagate the error for higher-level handling
   }
 };
 
+// Function to fetch the definition of a word
 const fetchDefinition = async (word) => {
   try {
     const response = await fetch(
@@ -31,12 +32,21 @@ const fetchDefinition = async (word) => {
         headers: { "X-Api-Key": apiKey },
       }
     );
-    const definition = await response.json();
-    console.log("Definition:", definition.definition);
-    return definition.definition;
+
+    // Parse the response
+    const data = await response.json();
+
+    if (data.definition) {
+      console.log("Definition:", data.definition);
+      return data.definition;
+    } else {
+      console.warn("No definition found for:", word);
+      return null; // Return null if no definition is found
+    }
   } catch (error) {
     console.error("Error fetching definition:", error);
-    throw error;
+    throw error; // Propagate the error for higher-level handling
   }
 };
+
 export { fetchRandomWord };

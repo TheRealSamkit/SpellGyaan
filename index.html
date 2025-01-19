@@ -28,9 +28,9 @@
       <div class="container flex hide">
         <div class="audioCon flex">
           <p class="audTitle">Word:</p>
-          <button class="btn wd-btn">▶</button>
+          <button class="btn wd-btn" id="wordPlayer">▶</button>
           <p class="audTitle">Definition:</p>
-          <button class="btn wd-btn">▶</button>
+          <button class="btn wd-btn" id="defPlayer">▶</button>
         </div>
         <div class="gameCon flex">
           <input
@@ -53,6 +53,11 @@
     >
       Made by &copy;Samkit Jain</a
     >
+    <div id="overlay" class="overlay flex hide">
+      <div class="loader" title="Loading animation for fetching the word"></div>
+      <br />
+      <h4 style="color: #fff">Fetching hardest word from the web...</h4>
+    </div>
     <script src="script.js" type="module"></script>
   </body>
 </html>
