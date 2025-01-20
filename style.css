@@ -90,6 +90,10 @@ main {
   height: 20rem;
 }
 
+.btnCon {
+  flex-direction: row;
+}
+
 .audioCon {
   flex-direction: row;
   height: 4rem;
@@ -115,12 +119,25 @@ main {
   font-size: 0.9rem;
   padding: 0.9em;
 }
+
 .sbt-btn {
   width: 6em;
   font-size: 1rem;
   padding: 0.9em;
   margin: 0.5em;
   align-self: flex-end;
+}
+
+.rst-btn {
+  width: 9em;
+  font-size: 1rem;
+  padding: 0.9em;
+  margin: 0.5em;
+  align-self: flex-start;
+}
+
+.fa-pause {
+  color: var(--sec-color);
 }
 
 .inp {
