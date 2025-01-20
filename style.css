@@ -94,6 +94,12 @@ main {
   flex-direction: row;
 }
 
+.scoreCon {
+  flex-direction: row;
+  font-size: 0.6rem;
+  text-align: center;
+}
+
 .audioCon {
   flex-direction: row;
   height: 4rem;
@@ -169,6 +175,10 @@ main {
   text-align: center;
   margin-top: 1rem;
   letter-spacing: 2px;
+}
+
+.remainGuess {
+  text-align: center;
 }
 
 @media (max-width: 768px) {

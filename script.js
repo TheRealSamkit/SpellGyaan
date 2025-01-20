@@ -8,7 +8,6 @@ const voices = [];
 
 speechSynthesis.onvoiceschanged = () => {
   voices.push(...speechSynthesis.getVoices());
-  console.log(voices.length);
 };
 
 const elements = {
@@ -52,7 +51,6 @@ function startGame(mode) {
   toggleVisibility(elements.container);
   difficulty = mode;
   pickWord();
-  console.log(difficulty);
 }
 
 async function fetchWordandDef() {
@@ -66,6 +64,7 @@ async function fetchWordandDef() {
     def = definition;
   } catch (error) {
     console.error("Error fetching word and definition:", error);
+    fetchWordandDef();
   } finally {
     toggleVisibility(elements.overlay);
   }
@@ -73,6 +72,7 @@ async function fetchWordandDef() {
 function speak(elem, toSpeak) {
   if (speechSynthesis.speaking) {
     speechSynthesis.cancel();
+    elem.innerHTML = "▶";
     return;
   }
   elem.innerHTML = `<i class="fa-solid fa-pause"></i>`;

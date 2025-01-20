@@ -11,9 +11,7 @@ const fetchRandomWord = async () => {
     const {
       word: [randomWord],
     } = await response.json();
-    console.log("Random word:", randomWord);
     const definition = await fetchDefinition(randomWord);
-    console.log("Definition:", definition);
     return { randomWord, definition };
   } catch (error) {
     console.error("Error fetching random word:", error);
@@ -30,7 +28,6 @@ const fetchDefinition = async (word) => {
       }
     );
     const definition = await response.json();
-    console.log("Definition:", definition.definition);
     return definition.definition;
   } catch (error) {
     console.error("Error fetching definition:", error);
