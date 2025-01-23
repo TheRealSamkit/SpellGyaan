@@ -1,14 +1,15 @@
 export { shakeContainer, streakAnimation, buttonAni };
 
+const streak = document.querySelector(".streak-container");
 function streakAnimation() {
-  toggleVisibility(elements.streak);
+  toggleVisibility(streak);
   anime({
     targets: ".streak-container",
     translateX: [300, -300],
     duration: 4000,
     easing: "easeOutExpo",
     complete: function () {
-      toggleVisibility(elements.streak);
+      toggleVisibility(streak);
     },
   });
 }
@@ -35,4 +36,8 @@ function shakeContainer() {
     ],
     easing: "easeInOutQuad",
   });
+}
+
+function toggleVisibility(element) {
+  element.classList.toggle("hide");
 }

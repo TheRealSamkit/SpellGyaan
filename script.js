@@ -1,21 +1,31 @@
 import { fetchRandomWord } from "./api.js";
-import { spellCheckerData, hardSpellCheckerData } from "./assets/constants.js";
+import {
+  spellCheckerData,
+  hardSpellCheckerData,
+  audioList,
+} from "./assets/constants.js";
 import { buttonAni, shakeContainer, streakAnimation } from "./animation.js";
 
-let word = "";
-let def = "";
-let difficulty = "";
-let falseGuess = 8;
-let correctGuesses = 0;
-let myScore = 0;
-let guessStreak = 0;
+let word = "",
+  def = "",
+  difficulty = "",
+  falseGuess = 8,
+  correctGuesses = 0,
+  myScore = 0,
+  guessStreak = 0,
+  words = [],
+  userGuesses = [],
+  sound = false;
 
+const { click, wrong, correct } = audioList;
 const voices = [];
 
+// Populate available voices for speech synthesis
 speechSynthesis.onvoiceschanged = () => {
   voices.push(...speechSynthesis.getVoices());
 };
 
+// DOM Elements
 const elements = {
   initializer: document.getElementById("init"),
   diffCon: document.querySelector(".diffContainer"),
@@ -32,140 +42,213 @@ const elements = {
   score: document.getElementById("score"),
   streak: document.querySelector(".streak-container"),
   pcount: document.querySelector(".count"),
+  clsPopup: document.getElementById("closePopup"),
+  popUp: document.getElementById("popup"),
+  guessTable: document.getElementById("guessTable"),
 };
 
 document.addEventListener("DOMContentLoaded", init);
 
+// Initialize event listeners and setup
 function init() {
   elements.initializer.addEventListener("click", startScreen);
   elements.submitBtn.addEventListener("click", checkAnswer);
   elements.resetBtn.addEventListener("click", resetGame);
-  elements.wordPlayer.addEventListener("click", function () {
-    speak(this, word);
-  });
-  elements.defPlayer.addEventListener("click", function () {
-    speak(this, def);
-  });
-  elements.diffButtons.forEach((button) =>
-    button.addEventListener("click", (e) => startGame(e.target.dataset.mode))
+  elements.clsPopup.addEventListener("click", togglePopup);
+  elements.wordPlayer.addEventListener("click", () =>
+    speak(word, elements.wordPlayer)
   );
+  elements.defPlayer.addEventListener("click", () =>
+    speak(def, elements.defPlayer)
+  );
+  elements.diffButtons.forEach((btn) =>
+    btn.addEventListener("click", (e) => startGame(e.target.dataset.mode))
+  );
+  setupSounds();
 }
 
+// Setup sound properties
+function setupSounds() {
+  correct.volume = 0.4;
+  wrong.volume = 0.2;
+  click.volume = 0.7;
+  sound = true;
+}
+
+// Toggle visibility of elements
+function toggleVisibility(element) {
+  element.classList.toggle("hide");
+}
+
+// Speech synthesis functionality
+function speak(text, element) {
+  playSound(click, 0.153);
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+    element.textContent = "▶";
+    return;
+  }
+  element.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.voice = voices.find((v) => v.lang.startsWith("en")) || voices[0];
+  utterance.onend = () => (element.textContent = "▶");
+  speechSynthesis.speak(utterance);
+}
+
+// Start screen animations
 function startScreen() {
   toggleVisibility(elements.initializer);
   toggleVisibility(elements.diffCon);
   buttonAni();
+  playSound(click, 0.153);
 }
 
+// Start game based on difficulty
 function startGame(mode) {
   toggleVisibility(elements.diffCon);
   toggleVisibility(elements.container);
   difficulty = mode;
   pickWord();
+  playSound(click, 0.153);
 }
 
+// Fetch random word and definition
 async function fetchWordandDef() {
   toggleVisibility(elements.overlay);
   try {
     const { randomWord, definition } = await fetchRandomWord();
-    if (!definition) {
-      throw new Error("No definition found");
-    }
+    if (!definition) throw new Error("No definition found");
     word = randomWord;
     def = definition;
   } catch (error) {
     console.error("Error fetching word and definition:", error);
-    fetchWordandDef();
+    alert("Failed to fetch word. Please try again.");
   } finally {
     toggleVisibility(elements.overlay);
   }
 }
-function speak(elem, toSpeak) {
-  if (speechSynthesis.speaking) {
-    speechSynthesis.cancel();
-    elem.innerHTML = "▶";
-    return;
-  }
-  elem.innerHTML = `<i class="fa-solid fa-pause"></i>`;
 
-  const utterance = new SpeechSynthesisUtterance(toSpeak);
-  if (voices.length > 0) {
-    utterance.voice = voices.find((v) => v.lang.startsWith("en")) || voices[0]; // Fallback to first voice
-  }
-
-  utterance.onend = () => {
-    elem.innerHTML = "▶";
-  };
-
-  speechSynthesis.speak(utterance);
-}
-
-function toggleVisibility(element) {
-  element.classList.toggle("hide");
-}
-
-function checkAnswer() {
-  const answer = elements.userInput.value.toLowerCase();
-  if (answer === word && falseGuess > 0) {
-    elements.messageBox.textContent = "Result: Correct!";
-    correctGuesses++;
-    guessStreak++;
-    myScore += correctGuesses * 50;
-    pickWord();
-    updateScore(true);
-  } else {
-    falseGuess -= 1;
-    myScore > 0 ? (myScore -= 20) : (myScore = 0);
-    elements.messageBox.textContent = "Result: Incorrect. Try again.";
-    elements.progressBar.value = falseGuess;
-    updateScore(false);
-    shakeContainer();
-  }
-  elements.userInput.value = "";
-  if (falseGuess === 0) {
-    elements.messageBox.textContent = `Game Over!`;
-    elements.resetBtn.textContent = "Play Again";
-    elements.userInput.disabled = true;
-  }
-}
-
-function resetGame() {
-  elements.messageBox.textContent = "Result: -----------------";
-  word = "";
-  def = "";
-  falseGuess = 8;
-  correctGuesses = 0;
-  pickWord();
-  elements.resetBtn.textContent = "Reset Game";
-  elements.userInput.disabled = false;
-  elements.progressBar.value = falseGuess;
-}
-
+// Pick word based on difficulty
 function pickWord() {
-  if (difficulty === "easy") {
-    const idx = getRandomInt(spellCheckerData.length);
-    word = spellCheckerData[idx].word;
-    def = spellCheckerData[idx].hint;
-  } else if (difficulty === "medium") {
-    const idx = getRandomInt(hardSpellCheckerData.length);
-    word = hardSpellCheckerData[idx].word; // Corrected reference
-    def = hardSpellCheckerData[idx].hint;
-  } else {
-    fetchWordandDef();
-  }
+  const data = difficulty === "easy" ? spellCheckerData : hardSpellCheckerData;
+  if (difficulty === "hard") return fetchWordandDef();
+  const { word: selectedWord, hint } = data[getRandomInt(data.length)];
+  word = selectedWord;
+  def = hint;
   console.log("Word:", word, "Definition:", def);
 }
 
+// Generate random index
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-function updateScore(disScore) {
-  if (guessStreak >= 3 && disScore) {
+// Check user answer
+function checkAnswer() {
+  playSound(click, 0.153);
+  const answer = elements.userInput.value.trim().toLowerCase();
+  if (!answer) return alert("Please type a word!");
+
+  words.push(word);
+  userGuesses.push(answer);
+
+  if (answer === word) {
+    elements.messageBox.textContent = "Result: Correct!";
+    correctGuesses++;
+    guessStreak++;
+    myScore += correctGuesses * 50;
+    updateScore(true);
+    playSound(correct);
+    pickWord();
+  } else {
+    elements.messageBox.textContent = "Result: Incorrect. Try again.";
+    falseGuess--;
+    myScore = Math.max(0, myScore - 20);
+    guessStreak = 0;
+    shakeContainer();
+    playSound(wrong, 2);
+    updateScore(true);
+  }
+
+  elements.progressBar.value = falseGuess;
+  elements.userInput.value = "";
+
+  if (falseGuess === 0) endGame();
+}
+
+// End game logic
+function endGame() {
+  elements.messageBox.textContent = "Game Over!";
+  elements.resetBtn.textContent = "Play Again";
+  elements.userInput.disabled = true;
+  elements.submitBtn.disabled = true;
+  updateTable();
+}
+
+// Reset the game
+function resetGame() {
+  word = def = "";
+  words = [];
+  userGuesses = [];
+  falseGuess = 8;
+  correctGuesses = 0;
+  guessStreak = 0;
+  myScore = 0;
+  elements.messageBox.textContent = "Result: -----------------";
+  elements.resetBtn.textContent = "Reset Game";
+  elements.userInput.disabled = false;
+  elements.submitBtn.disabled = false;
+  elements.progressBar.value = falseGuess;
+  pickWord();
+  playSound(click, 0.153);
+}
+
+// Update score and streak
+function updateScore(isCorrect) {
+  if (isCorrect && guessStreak >= 3) {
     myScore += guessStreak * 50;
-    elements.pcount.innerHTML = guessStreak;
+    elements.pcount.textContent = guessStreak;
     streakAnimation();
   }
   elements.score.textContent = myScore;
-  myScore += guessStreak * 50;
+}
+
+// Update guess table
+function updateTable() {
+  elements.guessTable.innerHTML = "<tr><th>Word</th><th>Your Guess</th></tr>";
+  const wordAttempts = words.reduce((acc, w, i) => {
+    acc[w] = acc[w] || [];
+    acc[w].push(userGuesses[i]);
+    return acc;
+  }, {});
+
+  Object.entries(wordAttempts).forEach(([word, guesses]) => {
+    guesses.forEach((guess, index) => {
+      const row = document.createElement("tr");
+      if (index === 0) {
+        const wordCell = document.createElement("td");
+        wordCell.textContent = word;
+        wordCell.rowSpan = guesses.length;
+        row.appendChild(wordCell);
+      }
+      const guessCell = document.createElement("td");
+      guessCell.textContent = guess;
+      guessCell.style.color = guess === word ? "green" : "red";
+      row.appendChild(guessCell);
+      elements.guessTable.appendChild(row);
+    });
+  });
+  togglePopup();
+}
+
+// Toggle popup visibility
+function togglePopup() {
+  toggleVisibility(elements.popUp);
+  playSound(click, 0.153);
+}
+
+// Play audio sound
+function playSound(audio, currentTime = 0) {
+  audio.currentTime = currentTime;
+  audio.play();
 }

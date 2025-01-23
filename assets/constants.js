@@ -199,3 +199,8 @@ const hardSpellCheckerData = [
     hint: "Discovering unique places while traveling in India.",
   },
 ];
+export const audioList = {
+  click: new Audio("assets/click.mp3"),
+  wrong: new Audio("assets/wrong.mp3"),
+  correct: new Audio("assets/correct.mp3"),
+};
