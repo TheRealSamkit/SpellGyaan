@@ -99,6 +99,15 @@ main {
   flex-direction: row;
 }
 
+.popupCon {
+  position: absolute;
+  z-index: 2;
+  background-color: var(--sec-color);
+  opacity: 50%;
+  height: 100%;
+  width: 100%;
+}
+
 .scoreCon {
   flex-direction: row;
   font-size: 1.2rem;
