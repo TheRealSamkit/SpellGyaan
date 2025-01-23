@@ -23,18 +23,18 @@
     <main class="flex">
       <button type="button" id="init" class="btn">Start Game</button>
       <div class="diffContainer hide">
-        <h2>Select Difficulty</h2>
+        <h2 class="diff">Select Difficulty</h2>
         <div class="flex btnContainer">
-          <button class="btn" data-mode="easy">Easy</button>
-          <button class="btn" data-mode="medium">Medium</button>
-          <button class="btn" data-mode="hard">Hard</button>
+          <button class="btn diff" data-mode="easy">Easy</button>
+          <button class="btn diff" data-mode="medium">Medium</button>
+          <button class="btn diff" data-mode="hard">Hard</button>
         </div>
       </div>
       <div class="container flex hide">
         <div class="scoreCon flex">
-          <p class="score">Score: <span id="score">0</span></p>
+          <p class="score">Score: <span id="score">0 </span></p>
           <p class="remainGuess">
-            Remaining Guesses: <input type="range" id="" value="8" />
+            Remaining Guesses: <progress id="pro" value="8" max="8"></progress>
           </p>
         </div>
         <div class="audioCon flex">
@@ -49,6 +49,7 @@
             id="userInput"
             class="inp"
             placeholder="Type the word here"
+            autocomplete="off"
           />
           <div class="btnCon flex">
             <button type="button" class="btn rst-btn" id="resetBtn">
@@ -60,6 +61,13 @@
           </div>
         </div>
         <p class="message" id="message">Result: -----------------</p>
+        <div class="streak-container hide">
+          <p class="streakText">Guess Streak</p>
+          <div class="streak">
+            🔥
+            <p class="count">0</p>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -77,5 +85,6 @@
       <h4 style="color: #fff">Fetching hardest word from the web...</h4>
     </div>
     <script src="script.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
   </body>
 </html>

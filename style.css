@@ -56,6 +56,7 @@ main {
   border-radius: 20px;
   box-shadow: 0 0 10px 0 var(--shadow-color);
   margin: 1rem auto;
+  position: relative;
 }
 
 .btn {
@@ -90,20 +91,27 @@ main {
   height: 20rem;
 }
 
+.streak-container {
+  position: absolute;
+}
+
 .btnCon {
   flex-direction: row;
 }
 
 .scoreCon {
   flex-direction: row;
-  font-size: 0.6rem;
+  font-size: 1.2rem;
   text-align: center;
+  justify-content: space-evenly;
+  padding: 0.2em;
+  width: 100%;
 }
 
 .audioCon {
   flex-direction: row;
   height: 4rem;
-  width: 30%;
+  width: 100%;
   align-self: flex-start;
   justify-content: space-evenly;
 }
@@ -227,6 +235,7 @@ main {
   box-sizing: border-box;
   animation: animloader 2s linear infinite;
 }
+
 .loader::after {
   content: "";
   box-sizing: border-box;
@@ -237,6 +246,30 @@ main {
   position: absolute;
   bottom: -20px;
   left: 46px;
+}
+
+.streak {
+  font-size: 5rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.streakText {
+  font-size: 1.6rem;
+  color: crimson;
+  padding: 0.2em;
+  border-radius: 5px;
+  background-color: var(--secondary-bg);
+}
+.count {
+  color: #000;
+  font-size: 0.7em;
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 @keyframes animloader {

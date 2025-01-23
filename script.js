@@ -3,6 +3,10 @@ import { spellCheckerData, hardSpellCheckerData } from "./assets/constants.js";
 let word = "";
 let def = "";
 let difficulty = "";
+let falseGuess = 8;
+let correctGuesses = 0;
+let myScore = 0;
+let guessStreak = 0;
 
 const voices = [];
 
@@ -22,6 +26,10 @@ const elements = {
   submitBtn: document.getElementById("submit"),
   messageBox: document.getElementById("message"),
   resetBtn: document.getElementById("resetBtn"),
+  progressBar: document.getElementById("pro"),
+  score: document.getElementById("score"),
+  streak: document.querySelector(".streak-container"),
+  pcount: document.querySelector(".count"),
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -44,6 +52,7 @@ function init() {
 function startScreen() {
   toggleVisibility(elements.initializer);
   toggleVisibility(elements.diffCon);
+  buttonAni();
 }
 
 function startGame(mode) {
@@ -95,21 +104,39 @@ function toggleVisibility(element) {
 
 function checkAnswer() {
   const answer = elements.userInput.value.toLowerCase();
-  if (answer === word) {
+  if (answer === word && falseGuess > 0) {
     elements.messageBox.textContent = "Result: Correct!";
-    elements.resetBtn.textContent = "New Game?";
+    correctGuesses++;
+    guessStreak++;
+    myScore += correctGuesses * 50;
+    pickWord();
+    updateScore(true);
   } else {
+    falseGuess -= 1;
+    myScore > 0 ? (myScore -= 20) : (myScore = 0);
     elements.messageBox.textContent = "Result: Incorrect. Try again.";
+    elements.progressBar.value = falseGuess;
+    updateScore(false);
+    shakeContainer();
   }
   elements.userInput.value = "";
+  if (falseGuess === 0) {
+    elements.messageBox.textContent = `Game Over!`;
+    elements.resetBtn.textContent = "Play Again";
+    elements.userInput.disabled = true;
+  }
 }
 
 function resetGame() {
   elements.messageBox.textContent = "Result: -----------------";
   word = "";
   def = "";
+  falseGuess = 8;
+  correctGuesses = 0;
   pickWord();
   elements.resetBtn.textContent = "Reset Game";
+  elements.userInput.disabled = false;
+  elements.progressBar.value = falseGuess;
 }
 
 function pickWord() {
@@ -129,4 +156,51 @@ function pickWord() {
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
+}
+
+function updateScore(disScore) {
+  if (guessStreak >= 3 && disScore) {
+    myScore += guessStreak * 50;
+    elements.pcount.innerHTML = guessStreak;
+    streakAnimation();
+  }
+  elements.score.textContent = myScore;
+  myScore += guessStreak * 50;
+}
+
+function streakAnimation() {
+  toggleVisibility(elements.streak);
+  anime({
+    targets: ".streak-container",
+    translateX: [300, -300],
+    duration: 4000,
+    easing: "easeOutExpo",
+    complete: function () {
+      toggleVisibility(elements.streak);
+    },
+  });
+}
+
+function buttonAni() {
+  anime({
+    targets: ".diff",
+    translateY: [-500, 0],
+    duration: 1000,
+    easing: "easeOutBounce",
+    delay: anime.stagger(100),
+  });
+}
+
+function shakeContainer() {
+  anime({
+    targets: ".container",
+    translateX: [
+      { value: -10, duration: 100 },
+      { value: 10, duration: 100 },
+      { value: -7, duration: 100 },
+      { value: 7, duration: 100 },
+      { value: 0, duration: 100 },
+    ],
+    easing: "easeInOutQuad",
+  });
 }
