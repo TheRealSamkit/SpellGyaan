@@ -1,6 +1,6 @@
-import { fetchRandomWord } from "/api.js";
+import { fetchRandomWord } from "./api.js";
 import { spellCheckerData, hardSpellCheckerData } from "./assets/constants.js";
-import { buttonAni, shakeContainer, streakAnimation } from "/animation.js";
+import { buttonAni, shakeContainer, streakAnimation } from "./animation.js";
 
 let word = "";
 let def = "";
