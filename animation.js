@@ -20,7 +20,7 @@ function buttonAni() {
     translateY: [-500, 0],
     duration: 1000,
     easing: "easeOutBounce",
-    delay: anime.stagger(100),
+    delay: anime.stagger(50),
   });
 }
 

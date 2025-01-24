@@ -100,15 +100,6 @@ main {
   flex-direction: row;
 }
 
-.popupCon {
-  position: absolute;
-  z-index: 2;
-  background-color: var(--sec-color);
-  opacity: 50%;
-  height: 100vh;
-  width: 100vw;
-}
-
 .scoreCon {
   flex-direction: row;
   font-size: 1.2rem;
@@ -121,8 +112,6 @@ main {
 .audioCon {
   flex-direction: row;
   height: 4rem;
-  width: 100%;
-  align-self: flex-start;
   justify-content: space-evenly;
 }
 
@@ -219,7 +208,6 @@ main {
 }
 
 .pop-up {
-  display: block;
   position: absolute;
   z-index: 1;
   left: 0;

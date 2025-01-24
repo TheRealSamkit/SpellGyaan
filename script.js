@@ -15,7 +15,8 @@ let word = "",
   guessStreak = 0,
   words = [],
   userGuesses = [],
-  sound = false;
+  sound = false,
+  pickedWord = [];
 
 const { click, wrong, correct } = audioList;
 const voices = [];
@@ -90,7 +91,7 @@ function speak(text, element) {
   }
   element.innerHTML = `<i class="fa-solid fa-pause"></i>`;
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.voice = voices.find((v) => v.lang.startsWith("en")) || voices[0];
+  utterance.voice = voices.find((v) => v.lang.startsWith("hi-IN")) || voices[0];
   utterance.onend = () => (element.textContent = "▶");
   speechSynthesis.speak(utterance);
 }
@@ -122,7 +123,7 @@ async function fetchWordandDef() {
     def = definition;
   } catch (error) {
     console.error("Error fetching word and definition:", error);
-    alert("Failed to fetch word. Please try again.");
+    await fetchWordandDef();
   } finally {
     toggleVisibility(elements.overlay);
   }
@@ -131,11 +132,24 @@ async function fetchWordandDef() {
 // Pick word based on difficulty
 function pickWord() {
   const data = difficulty === "easy" ? spellCheckerData : hardSpellCheckerData;
+
+  if (difficulty === "easy" && pickedWord.length > 49) {
+    (difficulty = "medium"), pickWord();
+  } else if (
+    (difficulty === "medium" || pickedWord.length > 47) &&
+    pickedWord.length > 97
+  ) {
+    (difficulty = "hard"), pickWord();
+  }
   if (difficulty === "hard") return fetchWordandDef();
   const { word: selectedWord, hint } = data[getRandomInt(data.length)];
   word = selectedWord;
   def = hint;
-  console.log("Word:", word, "Definition:", def);
+  if (pickedWord.includes(word)) {
+    pickWord();
+    return;
+  }
+  pickedWord.unshift(word);
 }
 
 // Generate random index
@@ -151,7 +165,7 @@ function checkAnswer() {
 
   words.push(word);
   userGuesses.push(answer);
-
+  console.log(words, userGuesses);
   if (answer === word) {
     elements.messageBox.textContent = "Result: Correct!";
     correctGuesses++;
@@ -210,6 +224,7 @@ function updateScore(isCorrect) {
     elements.pcount.textContent = guessStreak;
     streakAnimation();
   }
+  if (guessStreak === 4) falseGuess++;
   elements.score.textContent = myScore;
 }
 
