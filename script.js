@@ -260,7 +260,7 @@ function sanitizeAns(input) {
   const regex = /^[a-zA-Z0-9 ]+$/;
   input = input.replace(/[^\w\s]/gi, "");
   input = input.replace(/<\/?[^>]+(>|$)/g, "");
-  return regex.test(input);
+  return input;
 }
 
 // Toggle popup visibility
