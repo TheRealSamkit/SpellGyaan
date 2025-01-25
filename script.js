@@ -150,6 +150,7 @@ function pickWord() {
     return;
   }
   pickedWord.unshift(word);
+  console.log("Word: ", word, "\nDefinition: ", def);
 }
 
 // Generate random index
@@ -162,7 +163,7 @@ function checkAnswer() {
   playSound(click, 0.153);
   const answer = sanitizeAns(elements.userInput.value.trim().toLowerCase());
   if (!answer) return alert("Please type a word!");
-
+  console.log(answer);
   words.push(word);
   userGuesses.push(answer);
   console.log(words, userGuesses);
