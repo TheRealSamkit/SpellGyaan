@@ -160,7 +160,7 @@ function getRandomInt(max) {
 // Check user answer
 function checkAnswer() {
   playSound(click, 0.153);
-  const answer = elements.userInput.value.trim().toLowerCase();
+  const answer = sanitizeAns(elements.userInput.value.trim().toLowerCase());
   if (!answer) return alert("Please type a word!");
 
   words.push(word);
@@ -172,7 +172,7 @@ function checkAnswer() {
     guessStreak++;
     myScore += correctGuesses * 50;
     updateScore(true);
-    playSound(correct);
+    playSound(correct, 0.3);
     pickWord();
   } else {
     elements.messageBox.textContent = "Result: Incorrect. Try again.";
@@ -254,6 +254,13 @@ function updateTable() {
     });
   });
   togglePopup();
+}
+
+function sanitizeAns(input) {
+  const regex = /^[a-zA-Z0-9 ]+$/;
+  input = input.replace(/[^\w\s]/gi, "");
+  input = input.replace(/<\/?[^>]+(>|$)/g, "");
+  return regex.test(input);
 }
 
 // Toggle popup visibility
