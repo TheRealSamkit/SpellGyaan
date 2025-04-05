@@ -20,10 +20,12 @@ let word = "",
 
 const { click, wrong, correct } = audioList;
 const voices = [];
+let voicesLoaded = false;
 
 // Populate available voices for speech synthesis
 speechSynthesis.onvoiceschanged = () => {
   voices.push(...speechSynthesis.getVoices());
+  voicesLoaded = true;
 };
 
 // DOM Elements
@@ -84,23 +86,72 @@ function toggleVisibility(element) {
 // Speech synthesis functionality
 function speak(text, element) {
   playSound(click, 0.153);
+
+  // If voices haven't loaded yet, try loading them
+  if (!voicesLoaded) {
+    voices.push(...speechSynthesis.getVoices());
+    voicesLoaded = voices.length > 0;
+  }
+
   if (speechSynthesis.speaking) {
     speechSynthesis.cancel();
-    element.textContent = "▶";
+    element.innerHTML = `<i class="fa-solid fa-play"></i>`;
     return;
   }
+
   element.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.voice = voices.find((v) => v.lang.startsWith("hi-IN")) || voices[0];
-  utterance.onend = () => (element.textContent = "▶");
+  
+  // Force cancel any ongoing speech and reset state
+  window.speechSynthesis.cancel();
+  
+  // Configure utterance
+  utterance.voice = voices.length > 0 ? voices[12] : null;
+  utterance.lang = "hi-IN";
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+  
+  // Add all event handlers
+  utterance.onend = () => {
+    element.innerHTML = `<i class="fa-solid fa-play"></i>`;
+    speechSynthesis.cancel(); // Ensure clean state
+  };
+
+  utterance.onerror = () => {
+    element.innerHTML = `<i class="fa-solid fa-play"></i>`;
+    speechSynthesis.cancel();
+  };
+
+  utterance.onpause = () => {
+    element.innerHTML = `<i class="fa-solid fa-play"></i>`;
+  };
+
+  utterance.onresume = () => {
+    element.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+  };
+
+  // Ensure speech synthesis is in a good state
+  speechSynthesis.resume();
+  
+  // Start speaking
   speechSynthesis.speak(utterance);
+
+  // Workaround for Chrome issue where speech synthesis stops
+  const intervalId = setInterval(() => {
+    if (!speechSynthesis.speaking) {
+      clearInterval(intervalId);
+      return;
+    }
+    speechSynthesis.resume();
+  }, 200);
 }
 
 // Start screen animations
 function startScreen() {
   toggleVisibility(elements.initializer);
   toggleVisibility(elements.diffCon);
-  buttonAni();
+  // buttonAni();
   playSound(click, 0.153);
 }
 
@@ -121,6 +172,7 @@ async function fetchWordandDef() {
     if (!definition) throw new Error("No definition found");
     word = randomWord;
     def = definition;
+    console.log("Word: ", word, "\nDefinition: ", def);
   } catch (error) {
     console.error("Error fetching word and definition:", error);
     await fetchWordandDef();

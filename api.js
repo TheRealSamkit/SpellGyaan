@@ -2,12 +2,9 @@ const apiKey = "MsdGU/2fCdNC+r6rIExaHQ==NLsJaoXtMqa2dmXm";
 
 const fetchRandomWord = async () => {
   try {
-    const response = await fetch(
-      "https://api.api-ninjas.com/v1/randomword?type=noun",
-      {
-        headers: { "X-Api-Key": apiKey },
-      }
-    );
+    const response = await fetch("https://api.api-ninjas.com/v1/randomword", {
+      headers: { "X-Api-Key": apiKey },
+    });
     const {
       word: [randomWord],
     } = await response.json();

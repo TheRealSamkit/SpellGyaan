@@ -47,15 +47,15 @@ main {
 }
 
 .container {
-  background-color: var(--con-bg-color);
+  /* background-color: var(--con-bg-color); */
   flex-direction: column;
   width: 90%;
-  max-width: 1200px;
+  max-width: 600px;
   height: auto;
   min-height: 50vh;
   padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 0 10px 0 var(--shadow-color);
+  /* border-radius: 20px; */
+  /* box-shadow: 0 0 10px 0 var(--shadow-color); */
   margin: 1rem auto;
   position: relative;
 }
@@ -149,7 +149,8 @@ main {
   align-self: flex-start;
 }
 
-.fa-pause {
+.fa-pause,
+.fa-play {
   color: var(--sec-color);
 }
 
